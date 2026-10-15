@@ -1,0 +1,21 @@
+executar servidor
+
+node server.js
+
+Rodar no navegador
+
+http://localhost:3000/ping
+
+npm run dev
+
+.env configura variável
+
+Postman
+
+git status
+Vermelho - não commitado
+Verde - comitado, mas não atualizado
+git commit -m "comentário/descrição"
+git push
+git branch dev
+git push origin dev
