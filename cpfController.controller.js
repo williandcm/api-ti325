@@ -1,0 +1,70 @@
+//================================================================//
+// 1. FUNÇÕES AUXILIARES / UTILITÁRIAS (Ficam fora do controller)
+//================================================================//
+
+function validarCpfSimples(cpfOriginal) {
+    if(!cpfOriginal) return { valido: false, motivo:'CPF não foi informado'};
+
+    // Remove caracteres especiais (pontos e traço), deixando apenas números
+    // replace = trocar
+    //\/D/g (Expressão regular)
+    // /... / As barras no inicio e no fim servem para delimitar onde começa e termina a expressão regular do Javascript
+    // g é a flag global. ela diz ao javascript para substituir todas as ocorrências
+   
+    const apenasNumeros = string(cpfOriginal).replace(/\D/g, '');
+
+    // 2. Verifica se possui exatamente 11 digitos
+    if (apenasNumeros.length !== 11){
+        return {
+            valido: false,
+            motivo: `O CPF deve ter 11 digitos (você enviou ${apenasNumeros.length})`
+        }
+    }
+
+    // 3. Verifica se todos os dígitos são iguais (ex: 111.111.111-11) é invalido
+    const todosIguais = /^(\d)\1{10}\$/.test(apenasNumeros);
+    if (todosIguais) {
+        return { valido: false, motivo: 'CPF com todos os digitos iguais é invalido.'};
+    }
+
+    return {
+        valido: true,
+        motivo: 'CPF possui formato e tamanho válidos!',
+        cpfLimpo: apenasNumeros
+    }
+
+}
+
+//==================================================================//
+// 2. OBJETO DO CONTROLLER (Contém os metodos chamados pelas rotas)
+//==================================================================//
+const cpfController = {
+
+    // Método 1 = Apenas recebe e confirma
+    recebeCpf: (req, res) =>{
+        const { cpf } = req.body
+
+        return res.json({
+            sucesso: true,
+            mensagem: 'CPF recebido no controller com sucesso!',
+            cpfEnviado: cpf
+        });
+
+    },
+    // Método 2: Recebe e valida usando a função auxiliar
+    validarCpf: (req, res) =>{
+        const {cpf } = req.body
+        // LIGAÇÃO: A função do controller CHAMA a função auxiliar criada lá o topo!
+        const resultado = validarCpfSimples(cpf);
+        if (!resultado.valido){
+            return res.status(400).json({
+                status:'erro',
+                valido:false,
+                mensagem: resultado.motivo
+            })
+        }
+    }
+}
+
+
+module.exports = cpfController;
